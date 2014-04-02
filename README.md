@@ -20,7 +20,7 @@ def on_event(name, *args):
   print "Raised event %s with params %s" % (name, args)
 ```
 
-*Step 2. Initialise handler *
+Step 2. Initialise handler
 
 ```
 from lzpush import LZPushHandler
@@ -34,17 +34,28 @@ lzhandler = LZPushHandler(
 )
 ```
 
-*Step 3. Listen matches *
+Step 3. Listen matches
 
 ```
 lzhandler.listen_match('dev_season_2014_t20_02')
 lzhandler.listen_match('dev_season_2014_test_01')
 ```
 
-*Step 4. Connect Litzscore push server*
+Step 4. Connect Litzscore push server
 
 ```
 lzhandler.connect()
+```
+
+
+If you need, Change loggers level
+
+```
+logger = logging.getLogger('lzpush')
+logger.setLevel(logging.INFO)
+
+socket_logger = logging.getLogger('socketIO_client')
+socket_logger.setLevel(logging.INFO)
 ```
 
 

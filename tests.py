@@ -7,7 +7,7 @@ def on_match_update(card):
 def on_event(name, *args):
   print "Raised event %s with params %s" % (name, args)
 
-#Step 2. Initialise handler 
+# Step 2. Initialise handler 
 lzhandler = LZPushHandler(
   access_key = 'YOUR_ACCESS_KEY',
   secret_key = 'YOUR_SECRET_KEY',
@@ -15,6 +15,7 @@ lzhandler = LZPushHandler(
   on_update = on_match_update,
   on_event = on_event
 )
+
 
 # Step 3. Listen matches
 lzhandler.listen_match('iplt20_2013_g54')
