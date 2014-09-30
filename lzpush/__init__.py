@@ -4,6 +4,7 @@ import json
 import logging
 import time
 
+import socketIO_client
 from datetime import datetime, timedelta
 from socketIO_client import SocketIO, BaseNamespace
 from socketIO_client.exceptions import SocketIOError
@@ -13,18 +14,36 @@ __all__ = ['LZPush', 'PushConnection', 'NoAccessTokenError', 'PushAccessError']
 
 
 logger = logging.getLogger('lzpush')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 ch = logging.StreamHandler()
 logger.addHandler(ch)
 
 socket_logger = logging.getLogger('socketIO_client')
-socket_logger.setLevel(logging.INFO)
+socket_logger.setLevel(logging.ERROR)
 ch = logging.StreamHandler()
 socket_logger.addHandler(ch)
 
 
 class NoAccessTokenError(Exception): pass
 class PushAccessError(Exception): pass
+
+
+class LZSocket(SocketIO):
+  def wait(self, seconds=None, for_callbacks=False):
+    """Wait in a loop and process events as defined in the namespaces.
+
+    - Omit seconds, i.e. call wait() without arguments, to wait forever.
+    """
+    warning_screen = socketIO_client._yield_warning_screen(seconds)
+    for elapsed_time in warning_screen:
+      try:
+        self._process_events()
+      except TimeoutError, e:
+        pass
+
+      if self._stop_waiting(for_callbacks):
+        break
+      self.heartbeat_pacemaker.send(elapsed_time)
 
 class PushConnection(BaseNamespace):
   def on_match_update(self, card):
@@ -91,11 +110,11 @@ class LZPushHandler(object):
     self.matches = []
 
     self.auth_fail_count = 0
-    self.auth_fail_max = 5
+    self.auth_fail_max = 30
     self.auth_retry = 1
 
     self.conn_fail_count = 0
-    self.conn_fail_max = 5
+    self.conn_fail_max = 30
     self.conn_retry = 1        
 
     self.socket = None
@@ -205,8 +224,8 @@ class LZPushHandler(object):
       delta = exp - now
       delta = delta.total_seconds()
 
-      if delta > 0:
-        wait_seconds = min(wait_seconds, max(delta, 60*60))
+      if delta > 120:
+        wait_seconds = min(wait_seconds, delta)
       else:
         self.access_token = None
         self.push_servers = None          
@@ -219,7 +238,7 @@ class LZPushHandler(object):
 
       server = self.push_servers[0]
       logger.info("Connecting to server {}".format(server))
-      self.socket = SocketIO(server['host'], int(server['port']))
+      self.socket = LZSocket(server['host'], int(server['port']))
       self.conn = self.socket.define(PushConnection, '/stream')
 
       self.conn._access_token = self.access_token['access_token']
@@ -242,7 +261,7 @@ class LZPushHandler(object):
 
           delta = exp - datetime.now()
           delta = delta.total_seconds()
-          if delta < 60:
+          if delta < 120:
             self.reconnect()
 
         except KeyboardInterrupt, ke:
@@ -254,10 +273,10 @@ class LZPushHandler(object):
       logger.info("Closing socket")
 
     except ConnectionError, e:
-      logger.error("Failed to connect, trying again", e)
+      logger.error("Failed to connect, trying again. {}".format(e))
       self.do_error_reconnect()
     except TimeoutError, te:
-      logger.error("Failed to connect, trying again", te)
+      logger.error("Failed to connect, trying again. {}".format(te))
       self.do_error_reconnect()
 
     return False
