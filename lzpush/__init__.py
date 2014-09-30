@@ -27,12 +27,17 @@ class NoAccessTokenError(Exception): pass
 class PushAccessError(Exception): pass
 
 class PushConnection(BaseNamespace):
-
   def on_match_update(self, card):
     if self._on_update:
       self._on_update(card)
     else:
       logger.warning("No listener for on match update")
+
+  def on_past_ball_update(self, ball):
+    if self._on_past_ball_update:
+      self._on_past_ball_update(ball)
+    else:
+      logger.warning("No listener for on past ball update update")
 
   def on_auth_failed(self, *args):
     self._raise_event('auth_failed', *args)
@@ -74,7 +79,7 @@ class LZPushHandler(object):
   def __init__(self, 
     access_key, secret_key, app_id, 
     device_id=None, api_endpoint=None, 
-    on_update=None, on_event=None):
+    on_update=None, on_past_ball_update=None, on_event=None):
 
     self.access_key = access_key
     self.secret_key = secret_key
@@ -96,6 +101,7 @@ class LZPushHandler(object):
     self.socket = None
     self.conn = None
     self.on_update = on_update
+    self.on_past_ball_update = on_past_ball_update
     self.on_event = on_event
 
     if self.device_id is None:      
@@ -218,6 +224,7 @@ class LZPushHandler(object):
 
       self.conn._access_token = self.access_token['access_token']
       self.conn._on_update = self.on_update
+      self.conn._on_past_ball_update = self.on_past_ball_update
       self.conn._on_event = self.on_event
       self.conn._handler = self
       self.conn._matches = self.matches
@@ -240,7 +247,7 @@ class LZPushHandler(object):
 
         except KeyboardInterrupt, ke:
           self.disconnect()
-          return True          
+          return True
       else:
         return True
 
