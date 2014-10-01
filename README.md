@@ -16,6 +16,9 @@ Step 1. Register call back functions
 def on_match_update(card):
   print "Got match update for", card['key']
 
+def on_past_ball_update(ball):
+  print "Got a ball update", ball
+
 def on_event(name, *args):
   print "Raised event %s with params %s" % (name, args)
 ```
@@ -30,6 +33,7 @@ lzhandler = LZPushHandler(
   secret_key = 'YOUR_SECRET_KEY',
   app_id = 'YOUR_APP_ID',
   on_update = on_match_update,
+  on_past_ball_update = on_past_ball_update,
   on_event = on_event
 )
 ```
@@ -57,6 +61,12 @@ logger.setLevel(logging.INFO)
 socket_logger = logging.getLogger('socketIO_client')
 socket_logger.setLevel(logging.INFO)
 ```
+
+Events
+======
+
+`on_update` - Raised whenever a match is saved
+`on_past_ball_update` - Raised whenever a ball is saved, sometimes we may save the ball even if there was no change in public data. This will not be raised if the last ball is changed. But whenever last ball is changed, system will raise `on_update` event. 
 
 
 Support

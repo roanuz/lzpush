@@ -16,6 +16,9 @@ def on_match_update(card):
 
   # print "Got match update for", card['key'],
 
+def on_past_ball_update(ball):
+  print "Got a ball update", ball
+
 def on_event(name, *args):
   print "Raised event %s with params %s" % (name, args)
 
@@ -25,6 +28,7 @@ lzhandler = LZPushHandler(
   secret_key = secret_key,
   app_id = app_id,
   on_update = on_match_update,
+  on_past_ball_update = on_past_ball_update,
   on_event = on_event
 )
 
