@@ -66,6 +66,8 @@ Events
 ======
 
 `on_update` - Raised whenever a match is saved
+
+
 `on_past_ball_update` - Raised whenever a ball is saved, sometimes we may save the ball even if there was no change in public data. This will not be raised if the last ball is changed. But whenever last ball is changed, system will raise `on_update` event. 
 
 
