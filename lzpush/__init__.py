@@ -104,7 +104,7 @@ class LZPushHandler(object):
     self.secret_key = secret_key
     self.app_id = app_id
     self.device_id = device_id
-    self.api_endpoint = api_endpoint or 'https://api.litzscore.com'
+    self.api_endpoint = api_endpoint or 'https://rest.cricketapi.com'
     self.access_token = None
     self.push_servers = None
     self.matches = []
@@ -137,7 +137,7 @@ class LZPushHandler(object):
         access_key = self.access_key,
         secret_key = self.secret_key,
         app_id = self.app_id,
-        device_id = self.get_device_id()
+        device_id = self.device_id
       )
 
       params = urllib.urlencode(params)
@@ -208,7 +208,9 @@ class LZPushHandler(object):
       wait_seconds = 12 * 60 * 60
       access_token, push_servers = None, None
       if self.access_token is None:
+        print "Getting access token"
         access_token, push_servers = self.get_access_token()
+        print "Getting access token",access_token
         self.access_token = access_token
         self.push_servers = push_servers
 
