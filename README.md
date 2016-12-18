@@ -1,9 +1,9 @@
 lzpush - Litzscore Push Client
 ======
 
-Litzscore Push Client lets you get live cricket score notification from Litzscore server. It uses Litzscore API v2 to authenticate and receive notification. Make sure you have rights for push notification, check https://developers.litzscore.com/docs/
+Litzscore Push Client lets you get live cricket score notification from Litzscore server. It uses Litzscore API v2 to authenticate and receive notification. Make sure you have rights for push notification, check https://www.cricketapi.com/docs/
 
-Before you begin make sure you have registered your app in Litzscore Developers site https://developers.litzscore.com/get_started/.
+Before you begin make sure you have registered your app in Litzscore Developers site https://www.cricketapi.com/get_started/.
 
 
 Get started
@@ -73,4 +73,4 @@ Events
 
 Support
 =====
-If you any question, please contact litzscore support litzscore.support@roanuz.com
+If you any question, please contact litzscore support support@cricketapi.com
